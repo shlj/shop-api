@@ -24,8 +24,15 @@ $app = new Laravel\Lumen\Application(
 );
 
 // $app->withFacades();
+$app->withFacades();
+$app->configure('api');
+$app->configure('order');
+$app->configure('database');
+$app->configure('quese');
+$app->configure('jwt');
 
-// $app->withEloquent();
+
+$app->withEloquent();
 
 /*
 |--------------------------------------------------------------------------
@@ -62,10 +69,17 @@ $app->singleton(
 // $app->middleware([
 //    App\Http\Middleware\ExampleMiddleware::class
 // ]);
+$app->middleware([
+    App\Http\Middleware\RequestLogger::class,
+]);
 
 // $app->routeMiddleware([
 //     'auth' => App\Http\Middleware\Authenticate::class,
 // ]);
+$app->routeMiddleware([
+    'auth' => App\Http\Middleware\Authenticate::class,
+    'sign' => App\Http\Middleware\ValidateSign::class,
+]);
 
 /*
 |--------------------------------------------------------------------------
@@ -79,9 +93,30 @@ $app->singleton(
 */
 
 // $app->register(App\Providers\AppServiceProvider::class);
-// $app->register(App\Providers\AuthServiceProvider::class);
+ $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
+$app->register(Dingo\Api\Provider\LumenServiceProvider::class);
+//$app->register(\Illuminate\Redis\RedisServiceProvider::class);
+$app->register(\App\Providers\AppServiceProvider::class);
+//$app->register(\App\HM\Providers\AuthServiceProvider::class);
+$app->register(App\Providers\ResponseMacroServiceProvider::class);
 
+
+
+//jwt
+$app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
+
+// email 或者放在 provider里面
+//$app->register(Illuminate\Mail\MailServiceProvider::class);
+
+app('Dingo\Api\Auth\Auth')->extend('jwt', function ($app) {
+    return new Dingo\Api\Auth\Provider\JWT($app['Tymon\JWTAuth\JWTAuth']);
+});
+
+//Injecting auth
+$app->singleton(Illuminate\Auth\AuthManager::class, function ($app) {
+    return $app->make('auth');
+});
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes
@@ -95,6 +130,13 @@ $app->singleton(
 
 $app->group(['namespace' => 'App\Http\Controllers'], function ($app) {
     require __DIR__.'/../app/Http/routes.php';
+});
+
+//记录日志文件为每日
+$app->configureMonologUsing(function(Monolog\Logger $monolog) use ($app) {
+    return $monolog->pushHandler(
+        new \Monolog\Handler\RotatingFileHandler($app->storagePath().'/logs/lumen.log')
+    );
 });
 
 return $app;

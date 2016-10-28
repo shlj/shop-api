@@ -6,10 +6,12 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Traits\Macroable;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ResponseFactory
 {
+    use Macroable;
     /**
      * Return a new response from the application.
      *
