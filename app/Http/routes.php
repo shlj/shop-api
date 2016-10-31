@@ -19,4 +19,5 @@ $api = app('Dingo\Api\Routing\Router');
 
 $api->version('v1', ['namespace'=>'App\Http\Controllers\Api\V1'], function ($api) {
     $api->get('test', 'TestController@index');
+    $api->get('login', 'LoginController@login');
 });

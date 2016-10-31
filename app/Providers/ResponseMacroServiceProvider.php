@@ -8,6 +8,7 @@
 
 namespace App\Providers;
 
+use App\Exceptions\Exception;
 use App\Exceptions\HMException;
 //use Response;
 use Illuminate\Support\ServiceProvider;
@@ -28,7 +29,7 @@ class ResponseMacroServiceProvider extends ServiceProvider
             $args = func_get_args();
             $status = '1';
 
-            if($args[0] instanceof HMException){
+            if($args[0] instanceof Exception){
                 $code = $args[0]->getErrCode();
                 $msg = $args[0]->getErrMsg();
             }else{

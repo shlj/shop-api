@@ -26,9 +26,7 @@ $app = new Laravel\Lumen\Application(
 // $app->withFacades();
 $app->withFacades();
 $app->configure('api');
-$app->configure('order');
-$app->configure('database');
-$app->configure('quese');
+$app->configure('auth');
 $app->configure('jwt');
 
 
@@ -92,19 +90,17 @@ $app->routeMiddleware([
 |
 */
 
-// $app->register(App\Providers\AppServiceProvider::class);
+$app->register(App\Providers\AppServiceProvider::class);
  $app->register(App\Providers\AuthServiceProvider::class);
-// $app->register(App\Providers\EventServiceProvider::class);
-$app->register(Dingo\Api\Provider\LumenServiceProvider::class);
-//$app->register(\Illuminate\Redis\RedisServiceProvider::class);
+ $app->register(App\Providers\EventServiceProvider::class);
 $app->register(\App\Providers\AppServiceProvider::class);
-//$app->register(\App\HM\Providers\AuthServiceProvider::class);
+$app->register(Dingo\Api\Provider\LumenServiceProvider::class);
+$app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
+$app->register(\App\Api\Providers\AuthServiceProvider::class);
 $app->register(App\Providers\ResponseMacroServiceProvider::class);
 
 
-
 //jwt
-$app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 
 // email 或者放在 provider里面
 //$app->register(Illuminate\Mail\MailServiceProvider::class);
